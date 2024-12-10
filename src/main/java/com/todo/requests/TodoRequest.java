@@ -1,14 +1,12 @@
 package com.todo.requests;
 
 import com.todo.models.Todo;
-import io.qameta.allure.restassured.AllureRestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 import static io.restassured.RestAssured.given;
 
-public class TodoRequest extends Request implements CrudInterface<Todo> {
+public class TodoRequest extends Request implements CrudInterface<Todo>, ReadInterface {
     private static final String TODO_ENDPOINT = "/todos";
 
     public TodoRequest(RequestSpecification reqSpec) {
@@ -32,5 +30,10 @@ public class TodoRequest extends Request implements CrudInterface<Todo> {
     @Override
     public Object delete(long id) {
         return null;
+    }
+
+    @Override
+    public Response readAll() {
+        return given().spec(reqSpec).when().get(TODO_ENDPOINT);
     }
 }

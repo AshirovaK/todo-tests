@@ -11,7 +11,6 @@ import io.restassured.specification.RequestSpecification;
 import java.util.List;
 
 public class RequestSpec {
-    private RequestSpecBuilder requestSpecBuilder;
 
     private static RequestSpecBuilder baseSpecBuilder() {
         RequestSpecBuilder requestSpecBuilder = new RequestSpecBuilder();
@@ -24,7 +23,7 @@ public class RequestSpec {
         return requestSpecBuilder;
     }
 
-    public RequestSpecification unauthSpec() {
+    public static RequestSpecification unAuthSpec() {
         return baseSpecBuilder().build();
     }
 

@@ -1,5 +1,7 @@
 package com.todo.models;
 
+import java.util.Objects;
+
 public class Todo {
     private long id;
     private String text;
@@ -27,6 +29,19 @@ public class Todo {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Todo todo = (Todo) o;
+        return getId() == todo.getId() && isCompleted() == todo.isCompleted() && Objects.equals(getText(), todo.getText());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getText(), isCompleted());
     }
 
     public Todo() {
