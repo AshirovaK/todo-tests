@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.List;
+
+import static com.todo.specs.RequestSpec.unAuthSpec;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
@@ -26,9 +28,8 @@ public class PostTodosTests extends BaseTest {
     public void testCreateTodoWithValidData() {
         Todo newTodo = new Todo(1, "New Task", false);
         new ValidatedTodoRequest(RequestSpec.unAuthSpec()).create(newTodo);
-        Todo[] todos = new ValidatedTodoRequest(RequestSpec.unAuthSpec()).readAll();
-        Assertions.assertTrue(Arrays.asList(todos).contains(newTodo),
-                "Созданная задача найдена в списке TODO");
+        List<Todo> todos = new ValidatedTodoRequest(RequestSpec.unAuthSpec()).readAll();
+        Assertions.assertTrue(todos.contains(newTodo), "Созданная задача найдена в списке TODO");
     }
 
     /**
@@ -39,8 +40,7 @@ public class PostTodosTests extends BaseTest {
         // Создаем JSON без обязательного поля 'text'
         String invalidTodoJson = "{ \"id\": 2, \"completed\": true }";
 
-        given()
-                .filter(new AllureRestAssured())
+        given().filter(new AllureRestAssured())
                 .contentType(ContentType.JSON)
                 .body(invalidTodoJson)
                 .when()
@@ -61,8 +61,7 @@ public class PostTodosTests extends BaseTest {
         Todo newTodo = new Todo(3, maxLengthText, false);
 
         // Отправляем POST запрос для создания нового TODO
-        given()
-                .filter(new AllureRestAssured())
+        given().filter(new AllureRestAssured())
                 .contentType(ContentType.JSON)
                 .body(newTodo)
                 .when()
@@ -72,8 +71,7 @@ public class PostTodosTests extends BaseTest {
                 .body(is(emptyOrNullString())); // Проверяем, что тело ответа пустое
 
         // Проверяем, что TODO было успешно создано
-        Todo[] todos = given()
-                .when()
+        Todo[] todos = given().when()
                 .get("/todos")
                 .then()
                 .statusCode(200)
@@ -101,9 +99,7 @@ public class PostTodosTests extends BaseTest {
         // Поле 'completed' содержит строку вместо булевого значения
         Todo newTodo = new Todo(3, "djjdjd", false);
 
-
         TodoRequest todoRequest = new TodoRequest(RequestSpec.authSpec());
-
 
         todoRequest.create(newTodo)
                 .then()
@@ -119,13 +115,12 @@ public class PostTodosTests extends BaseTest {
     public void testCreateTodoWithExistingId() {
         // Сначала создаем TODO с id = 5
         Todo firstTodo = new Todo(5, "First Task", false);
-        createTodo(firstTodo);
+        new ValidatedTodoRequest(unAuthSpec()).create(firstTodo);
 
         // Пытаемся создать другую TODO с тем же id
         Todo duplicateTodo = new Todo(5, "Duplicate Task", true);
 
-        given()
-                .filter(new AllureRestAssured())
+        given().filter(new AllureRestAssured())
                 .contentType(ContentType.JSON)
                 .body(duplicateTodo)
                 .when()

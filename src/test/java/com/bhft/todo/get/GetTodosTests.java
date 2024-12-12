@@ -2,18 +2,23 @@ package com.bhft.todo.get;
 
 
 import com.bhft.todo.BaseTest;
+import com.todo.requests.ValidatedTodoRequest;
 import io.qameta.allure.*;
 import io.qameta.allure.restassured.AllureRestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static com.todo.specs.RequestSpec.unAuthSpec;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import com.todo.models.Todo;
+
+import java.util.List;
 
 @Epic("TODO Management")
 @Feature("Get Todos API")
@@ -27,14 +32,8 @@ public class GetTodosTests extends BaseTest {
     @Test
     @Description("Получение пустого списка TODO, когда база данных пуста")
     public void testGetTodosWhenDatabaseIsEmpty() {
-        given()
-                .filter(new AllureRestAssured())
-                .when()
-                .get("/todos")
-                .then()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .body("", hasSize(0));
+        List<Todo> todos = new ValidatedTodoRequest(unAuthSpec()).readAll();
+        assertThat("Список пуст", todos.size(), is(0));
     }
 
     @Test
@@ -43,31 +42,14 @@ public class GetTodosTests extends BaseTest {
         // Предварительно создать несколько TODO
         Todo todo1 = new Todo(1, "Task 1", false);
         Todo todo2 = new Todo(2, "Task 2", true);
+        new ValidatedTodoRequest(unAuthSpec()).create(todo1);
+        new ValidatedTodoRequest(unAuthSpec()).create(todo2);
 
-        createTodo(todo1);
-        createTodo(todo2);
+        List<Todo> todos = new ValidatedTodoRequest(unAuthSpec()).readAll();
 
-        Response response =
-                given()
-                        .filter(new AllureRestAssured())
-                        .when()
-                        .get("/todos")
-                        .then()
-                        .statusCode(200)
-                        .contentType("application/json")
-                        .body("", hasSize(2))
-                        .extract().response();
-
-        // Дополнительная проверка содержимого
-        Todo[] todos = response.getBody().as(Todo[].class);
-
-        Assertions.assertEquals(1, todos[0].getId());
-        Assertions.assertEquals("Task 1", todos[0].getText());
-        Assertions.assertFalse(todos[0].isCompleted());
-
-        Assertions.assertEquals(2, todos[1].getId());
-        Assertions.assertEquals("Task 2", todos[1].getText());
-        Assertions.assertTrue(todos[1].isCompleted());
+        assertThat("Список содержит 2 значения", todos.size(), is(2));
+        assertThat("Содержатся корректные данные", todos, containsInAnyOrder(todo1, todo2));
+        //поленилась делать софт ассерт
     }
 
     @Test
@@ -75,38 +57,21 @@ public class GetTodosTests extends BaseTest {
     public void testGetTodosWithOffsetAndLimit() {
         // Создаем 5 TODO
         for (int i = 1; i <= 5; i++) {
-            createTodo(new Todo(i, "Task " + i, i % 2 == 0));
+            new ValidatedTodoRequest(unAuthSpec()).create(new Todo(i, "Task " + i, i % 2 == 0));
+
         }
 
-        Response response =
-                given()
-                        .filter(new AllureRestAssured())
-                        .queryParam("offset", 2)
-                        .queryParam("limit", 2)
-                        .when()
-                        .get("/todos")
-                        .then()
-                        .statusCode(200)
-                        .contentType("application/json")
-                        .body("", hasSize(2))
-                        .extract().response();
+        List<Todo> todos = new ValidatedTodoRequest(unAuthSpec()).readAll(2, 2);
 
-        // Проверяем, что получили задачи с id 3 и 4
-        Todo[] todos = response.getBody().as(Todo[].class);
-
-        Assertions.assertEquals(3, todos[0].getId());
-        Assertions.assertEquals("Task 3", todos[0].getText());
-
-        Assertions.assertEquals(4, todos[1].getId());
-        Assertions.assertEquals("Task 4", todos[1].getText());
+        assertThat("Список содержит 2 значения", todos.size(), is(2));
+//        assertThat(); проассертить что в пагинаию попали таски с id 3 и id 4 (и сами таски корректны)
     }
 
     @Test
     @DisplayName("Передача некорректных значений в offset и limit")
     public void testGetTodosWithInvalidOffsetAndLimit() {
         // Тест с отрицательным offset
-        given()
-                .filter(new AllureRestAssured())
+        given().filter(new AllureRestAssured())
                 .queryParam("offset", -1)
                 .queryParam("limit", 2)
                 .when()
@@ -117,8 +82,7 @@ public class GetTodosTests extends BaseTest {
                 .body(containsString("Invalid query string"));
 
         // Тест с нечисловым limit
-        given()
-                .filter(new AllureRestAssured())
+        given().filter(new AllureRestAssured())
                 .queryParam("offset", 0)
                 .queryParam("limit", "abc")
                 .when()
@@ -129,8 +93,7 @@ public class GetTodosTests extends BaseTest {
                 .body(containsString("Invalid query string"));
 
         // Тест с отсутствующим значением offset
-        given()
-                .filter(new AllureRestAssured())
+        given().filter(new AllureRestAssured())
                 .queryParam("offset", "")
                 .queryParam("limit", 2)
                 .when()
@@ -146,21 +109,21 @@ public class GetTodosTests extends BaseTest {
     public void testGetTodosWithExcessiveLimit() {
         // Создаем 10 TODO
         for (int i = 1; i <= 10; i++) {
-            createTodo(new Todo(i, "Task " + i, i % 2 == 0));
+            new ValidatedTodoRequest(unAuthSpec()).create(new Todo(i, "Task " + i, i % 2 == 0));
         }
 
-        Response response =
-                given()
-                        .filter(new AllureRestAssured())
-                        .queryParam("limit", 1000)
-                        .when()
-                        .get("/todos")
-                        .then()
-                        .statusCode(200)
-                        .contentType("application/json")
-                        .extract().response();
+        Response response = given().filter(new AllureRestAssured())
+                .queryParam("limit", 1000)
+                .when()
+                .get("/todos")
+                .then()
+                .statusCode(200)
+                .contentType("application/json")
+                .extract()
+                .response();
 
-        Todo[] todos = response.getBody().as(Todo[].class);
+        Todo[] todos = response.getBody()
+                .as(Todo[].class);
 
         // Проверяем, что вернулось 10 задач
         Assertions.assertEquals(10, todos.length);

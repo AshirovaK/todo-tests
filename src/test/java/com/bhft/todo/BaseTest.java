@@ -13,16 +13,6 @@ public class BaseTest {
         RestAssured.port = 8080;
     }
 
-    protected void createTodo(Todo todo) {
-        given()
-                .contentType("application/json")
-                .body(todo)
-                .when()
-                .post("/todos")
-                .then()
-                .statusCode(201);
-    }
-
     protected void deleteAllTodos() {
 
         Todo[] todos = given()

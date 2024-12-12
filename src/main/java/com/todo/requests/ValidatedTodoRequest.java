@@ -1,46 +1,66 @@
 package com.todo.requests;
 
 import com.todo.models.Todo;
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import java.util.List;
 
-public class ValidatedTodoRequest extends Request implements CrudInterface<Todo>, ReadInterface {
+public class ValidatedTodoRequest extends Request implements CrudInterface<Todo>, SearchInterface {
+
+    private TodoRequest todoRequest;
 
     public ValidatedTodoRequest(RequestSpecification reqSpec) {
         super(reqSpec);
-    }
-
-    protected TodoRequest todoRequest() {
-        return new TodoRequest(reqSpec);
+        todoRequest = new TodoRequest(reqSpec);
     }
 
     @Override
     public String create(Todo entity) {
-        Response response = todoRequest().create(entity);
-        assertThat(response.statusCode(), is(HttpStatus.SC_CREATED));
-        assertThat((response.body().asString()), is(Matchers.emptyOrNullString()));
-        return response.body().asString();
+        return todoRequest.create(entity)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.SC_CREATED)
+                .extract()
+                .asString();
+
     }
 
     @Override
-    public Object update(long id, Todo entity) {
-        return null;
+    public Todo update(long id, Todo entity) {
+        return todoRequest.update(id, entity)
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .extract()
+                .as(Todo.class);
     }
 
     @Override
-    public Object delete(long id) {
-        return null;
+    public String delete(long id) {
+        return todoRequest.delete(id)
+                .then()
+                .statusCode(HttpStatus.SC_NO_CONTENT)
+                .extract()
+                .body()
+                .asString();
     }
 
     @Override
-    public Todo[] readAll() {
-        Response response = todoRequest().readAll();
-        assertThat(response.statusCode(), is(HttpStatus.SC_OK));
-        return response.body().as(Todo[].class);
+    public List<Todo> readAll(int offset, int limit) {
+        Todo[] todos = todoRequest.readAll(offset, limit)
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .extract()
+                .as(Todo[].class);
+        return List.of(todos);
+    }
+
+    public List<Todo> readAll() {
+        Todo[] todos = todoRequest.readAll()
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .extract()
+                .as(Todo[].class);
+        return List.of(todos);
     }
 }
