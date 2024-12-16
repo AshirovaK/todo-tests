@@ -1,6 +1,7 @@
 package com.todo.requests;
 
 import com.todo.models.Todo;
+import com.todo.storages.TestDataStorage;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
 
@@ -17,12 +18,15 @@ public class ValidatedTodoRequest extends Request implements CrudInterface<Todo>
 
     @Override
     public String create(Todo entity) {
-        return todoRequest.create(entity)
+        String response = todoRequest.create(entity)
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.SC_CREATED)
                 .extract()
                 .asString();
+        TestDataStorage.getInstance()
+                .addData(entity);
+        return response;
 
     }
 

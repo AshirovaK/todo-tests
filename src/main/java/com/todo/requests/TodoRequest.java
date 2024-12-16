@@ -1,6 +1,7 @@
 package com.todo.requests;
 
 import com.todo.models.Todo;
+import com.todo.storages.TestDataStorage;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
@@ -15,10 +16,13 @@ public class TodoRequest extends Request implements CrudInterface<Todo>, SearchI
 
     @Override
     public Response create(Todo entity) {
-        return given().spec(reqSpec)
+        Response response = given().spec(reqSpec)
                 .body(entity)
                 .when()
                 .post(TODO_ENDPOINT);
+        TestDataStorage.getInstance()
+                .addData(entity);
+        return response;
     }
 
     @Override
