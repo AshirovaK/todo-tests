@@ -1,5 +1,6 @@
 package com.bhft.todo;
 
+import com.todo.ConfigReader;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
 import com.todo.models.Todo;
@@ -9,8 +10,10 @@ import static io.restassured.RestAssured.given;
 public class BaseTest {
     @BeforeAll
     public static void setup() {
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = 8080;
+        RestAssured.baseURI = ConfigReader.getInstance()
+                .getBaseUrl();
+        RestAssured.port = ConfigReader.getInstance()
+                .getPort();
     }
 
     protected void deleteAllTodos() {
