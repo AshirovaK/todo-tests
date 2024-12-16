@@ -44,10 +44,6 @@ public class Todo {
         return Objects.hash(getId(), getText(), isCompleted());
     }
 
-    public Todo() {
-
-    }
-
     public Todo(long id, String text, boolean completed) {
         this.id = id;
         this.text = text;
