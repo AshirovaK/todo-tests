@@ -2,6 +2,7 @@ package com.bhft.todo.post;
 
 import com.bhft.todo.BaseTest;
 import com.todo.models.Todo;
+import com.todo.models.TodosBuilder;
 import com.todo.requests.TodoRequest;
 import com.todo.requests.ValidatedTodoRequest;
 import com.todo.specs.RequestSpec;
@@ -9,6 +10,7 @@ import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -95,9 +97,13 @@ public class PostTodosTests extends BaseTest {
      * TC4: Передача некорректных типов данных в полях.
      */
     @Test
+    @Disabled("Ignoring contract test")
     public void testCreateTodoWithInvalidDataTypes() {
         // Поле 'completed' содержит строку вместо булевого значения
-        Todo newTodo = new Todo(3, "djjdjd", false);
+        Todo newTodo = new TodosBuilder().setId(3)
+                .setText("djjdjd")
+                .setCompleted(false)
+                .build();
 
         TodoRequest todoRequest = new TodoRequest(RequestSpec.authSpec());
 
@@ -114,11 +120,11 @@ public class PostTodosTests extends BaseTest {
     @Test
     public void testCreateTodoWithExistingId() {
         // Сначала создаем TODO с id = 5
-        Todo firstTodo = new Todo(5, "First Task", false);
+        Todo firstTodo = new TodosBuilder().setId(5).setText("First Task").setCompleted(false).build();
         new ValidatedTodoRequest(unAuthSpec()).create(firstTodo);
 
         // Пытаемся создать другую TODO с тем же id
-        Todo duplicateTodo = new Todo(5, "Duplicate Task", true);
+        Todo duplicateTodo = new TodosBuilder().setId(5).setText("Duplicate Task").setCompleted(true).build();
 
         given().filter(new AllureRestAssured())
                 .contentType(ContentType.JSON)

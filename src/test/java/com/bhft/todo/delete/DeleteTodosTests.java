@@ -2,6 +2,7 @@ package com.bhft.todo.delete;
 
 import com.bhft.todo.BaseTest;
 import com.todo.models.Todo;
+import com.todo.models.TodosBuilder;
 import com.todo.requests.TodoRequest;
 import com.todo.requests.ValidatedTodoRequest;
 import com.todo.specs.RequestSpec;
@@ -28,8 +29,10 @@ public class DeleteTodosTests extends BaseTest {
      */
     @Test
     public void testDeleteExistingTodoWithValidAuth() {
-        // Создаем TODO для удаления
-        Todo todo = new Todo(1, "Task to Delete", false);
+        Todo todo = new TodosBuilder().setId(1)
+                .setText("Task to Delete")
+                .setCompleted(false)
+                .build();
         new ValidatedTodoRequest(unAuthSpec()).create(todo);
         String body = new ValidatedTodoRequest(RequestSpec.authSpec()).delete(todo.getId());
         assertThat(body, is(emptyOrNullString()));
@@ -45,7 +48,10 @@ public class DeleteTodosTests extends BaseTest {
     @Test
     public void testDeleteTodoWithoutAuthHeader() {
         // Создаем TODO для удаления
-        Todo todo = new Todo(2, "Task to Delete", false);
+        Todo todo = new TodosBuilder().setId(2)
+                .setText("Task to Delete")
+                .setCompleted(false)
+                .build();
         new ValidatedTodoRequest(unAuthSpec()).create(todo);
         // Отправляем DELETE запрос без заголовка Authorization
         new TodoRequest(unAuthSpec()).delete(todo.getId())
@@ -62,7 +68,10 @@ public class DeleteTodosTests extends BaseTest {
     @Test
     public void testDeleteTodoWithInvalidAuth() {
         // Создаем TODO для удаления
-        Todo todo = new Todo(3, "Task to Delete", false);
+        Todo todo = new TodosBuilder().setId(3)
+                .setText("Task to Delete")
+                .setCompleted(false)
+                .build();
         new ValidatedTodoRequest(unAuthSpec()).create(todo);
 
         // Отправляем DELETE запрос с некорректной авторизацией
@@ -80,8 +89,10 @@ public class DeleteTodosTests extends BaseTest {
     @Test
     public void testDeleteNonExistentTodo() {
         // Отправляем DELETE запрос для несуществующего TODO с корректной авторизацией
-
-        Todo todo = new Todo(999, "Task to Delete", false);
+        Todo todo = new TodosBuilder().setId(999)
+                .setText("Task to Delete")
+                .setCompleted(false)
+                .build();
         new TodoRequest(authSpec()).delete(todo.getId())
                 .then()
                 .statusCode(404);

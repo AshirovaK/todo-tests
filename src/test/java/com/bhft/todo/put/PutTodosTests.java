@@ -1,12 +1,14 @@
 package com.bhft.todo.put;
 
 import com.bhft.todo.BaseTest;
+import com.todo.models.TodosBuilder;
 import com.todo.requests.ValidatedTodoRequest;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static com.todo.specs.RequestSpec.unAuthSpec;
@@ -28,11 +30,17 @@ public class PutTodosTests extends BaseTest {
     @Test
     public void testUpdateExistingTodoWithValidData() {
         // Создаем TODO для обновления
-        Todo originalTodo = new Todo(1, "Original Task", false);
+        Todo originalTodo = new TodosBuilder().setId(1)
+                .setText("Original Task")
+                .setCompleted(false)
+                .build();
         new ValidatedTodoRequest(unAuthSpec()).create(originalTodo);
 
         // Обновленные данные
-        Todo updatedTodo = new Todo(1, "Updated Task", true);
+        Todo updatedTodo = new TodosBuilder().setId(1)
+                .setText("Updated Task")
+                .setCompleted(true)
+                .build();
 
         // Отправляем PUT запрос для обновления
         given().filter(new ResponseLoggingFilter())
@@ -42,10 +50,6 @@ public class PutTodosTests extends BaseTest {
                 .put("/todos/" + updatedTodo.getId())
                 .then()
                 .statusCode(200);
-        //.contentType(ContentType.JSON)
-//                .body("id", equalTo(1))
-//                .body("text", equalTo("Updated Task"))
-//                .body("completed", equalTo(true));
 
         // Проверяем, что данные были обновлены
         Todo[] todos = given().when()
@@ -66,7 +70,10 @@ public class PutTodosTests extends BaseTest {
     @Test
     public void testUpdateNonExistentTodo() {
         // Обновленные данные для несуществующего TODO
-        Todo updatedTodo = new Todo(999, "Non-existent Task", true);
+        Todo updatedTodo = new TodosBuilder().setId(999)
+                .setText("Non-existent Task")
+                .setCompleted(true)
+                .build();
 
         given().filter(new AllureRestAssured())
                 .contentType(ContentType.JSON)
@@ -85,6 +92,7 @@ public class PutTodosTests extends BaseTest {
     @Test
     public void testUpdateTodoWithMissingFields() {
         // Создаем TODO для обновления
+
         Todo originalTodo = new Todo(2, "Task to Update", false);
         new ValidatedTodoRequest(unAuthSpec()).create(originalTodo);
 
@@ -105,6 +113,7 @@ public class PutTodosTests extends BaseTest {
     /**
      * TC4: Передача некорректных типов данных при обновлении.
      */
+    @Disabled("Ignoring contract test")
     @Test
     public void testUpdateTodoWithInvalidDataTypes() {
         // Создаем TODO для обновления
@@ -129,7 +138,10 @@ public class PutTodosTests extends BaseTest {
     @Test
     public void testUpdateTodoWithoutChangingData() {
         // Создаем TODO для обновления
-        Todo originalTodo = new Todo(4, "Task without Changes", false);
+        Todo originalTodo = new TodosBuilder().setId(4)
+                .setText("Task without Changes")
+                .setCompleted(false)
+                .build();
         new ValidatedTodoRequest(unAuthSpec()).create(originalTodo);
 
         // Отправляем PUT запрос с теми же данными

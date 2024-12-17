@@ -2,6 +2,7 @@ package com.bhft.todo.get;
 
 
 import com.bhft.todo.BaseTest;
+import com.todo.models.TodosBuilder;
 import com.todo.requests.ValidatedTodoRequest;
 import io.qameta.allure.*;
 import io.qameta.allure.restassured.AllureRestAssured;
@@ -40,8 +41,8 @@ public class GetTodosTests extends BaseTest {
     @Description("Получение списка TODO с существующими записями")
     public void testGetTodosWithExistingEntries() {
         // Предварительно создать несколько TODO
-        Todo todo1 = new Todo(1, "Task 1", false);
-        Todo todo2 = new Todo(2, "Task 2", true);
+        Todo todo1 = new TodosBuilder().setId(1).setText("Task 1").setCompleted(false).build();
+        Todo todo2 = new TodosBuilder().setId(1).setText("Task 2").setCompleted(true).build();
         new ValidatedTodoRequest(unAuthSpec()).create(todo1);
         new ValidatedTodoRequest(unAuthSpec()).create(todo2);
 
