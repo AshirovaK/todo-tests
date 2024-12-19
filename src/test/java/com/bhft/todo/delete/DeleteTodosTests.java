@@ -19,11 +19,6 @@ import static org.hamcrest.Matchers.is;
 
 public class DeleteTodosTests extends BaseTest {
 
-    @BeforeEach
-    public void setupEach() {
-        deleteAllTodos();
-    }
-
     /**
      * TC1: Успешное удаление существующего TODO с корректной авторизацией.
      */

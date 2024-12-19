@@ -19,11 +19,6 @@ import com.todo.models.Todo;
 
 public class PutTodosTests extends BaseTest {
 
-    @BeforeEach
-    public void setupEach() {
-        deleteAllTodos();
-    }
-
     /**
      * TC1: Обновление существующего TODO корректными данными.
      */

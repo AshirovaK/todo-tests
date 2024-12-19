@@ -21,11 +21,6 @@ import static org.hamcrest.Matchers.*;
 
 public class PostTodosTests extends BaseTest {
 
-    @BeforeEach
-    public void setupEach() {
-        deleteAllTodos();
-    }
-
     @Test
     public void testCreateTodoWithValidData() {
         Todo newTodo = new Todo(1, "New Task", false);

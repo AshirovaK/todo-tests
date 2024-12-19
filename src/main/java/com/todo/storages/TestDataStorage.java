@@ -25,7 +25,7 @@ public class TestDataStorage {
         return storage;
     }
 
-    public void clean() {
+    public void cleanInstance() {
         storage = new HashMap<>();
     }
 }

@@ -1,40 +1,46 @@
 package com.bhft.todo;
 
-import com.todo.ConfigReader;
-import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeAll;
+import com.todo.conf.Configuration;
 import com.todo.models.Todo;
+import com.todo.requests.TodoRequest;
+import com.todo.specs.RequestSpec;
+import com.todo.storages.TestDataStorage;
+import io.restassured.RestAssured;
+import io.restassured.parsing.Parser;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
-import static io.restassured.RestAssured.given;
+import java.util.HashMap;
+import java.util.List;
 
 public class BaseTest {
     @BeforeAll
     public static void setup() {
-        RestAssured.baseURI = ConfigReader.getInstance()
-                .getBaseUrl();
-        RestAssured.port = ConfigReader.getInstance()
-                .getPort();
+        RestAssured.defaultParser = Parser.JSON;
+        RestAssured.baseURI = Configuration.getInstance()
+                .getProperty("BASE_URL");
+        RestAssured.port = Integer.parseInt(Configuration.getInstance()
+                .getProperty("PORT"));
     }
 
+    @BeforeEach
     protected void deleteAllTodos() {
-
-        Todo[] todos = given()
-                .when()
-                .get("/todos")
+        List<Todo> todos = List.of(new TodoRequest(RequestSpec.authSpec()).readAll()
                 .then()
-                .statusCode(200)
                 .extract()
-                .as(Todo[].class);
-
-        for (Todo todo : todos) {
-            given()
-                    .auth()
-                    .preemptive()
-                    .basic("admin", "admin")
-                    .when()
-                    .delete("/todos/" + todo.getId())
-                    .then()
-                    .statusCode(204);
-        }
+                .body()
+                .as(Todo[].class));
+        todos.forEach(todo -> new TodoRequest(RequestSpec.authSpec()).delete(todo.getId()));
     }
+
+    @AfterEach
+    public void clean() {
+        HashMap<Long, Todo> todos = TestDataStorage.getInstance()
+                .getStorage();
+        todos.forEach((id, todo) -> new TodoRequest(RequestSpec.authSpec()).delete(id));
+//        TestDataStorage.getInstance()
+//                .cleanInstance();
+    }
+
 }

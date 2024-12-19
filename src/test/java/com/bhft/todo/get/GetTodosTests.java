@@ -2,6 +2,8 @@ package com.bhft.todo.get;
 
 
 import com.bhft.todo.BaseTest;
+import com.todo.annotations.Mobile;
+import com.todo.annotations.PrepareTodo;
 import com.todo.models.TodosBuilder;
 import com.todo.requests.ValidatedTodoRequest;
 import io.qameta.allure.*;
@@ -25,11 +27,6 @@ import java.util.List;
 @Feature("Get Todos API")
 public class GetTodosTests extends BaseTest {
 
-    @BeforeEach
-    public void setupEach() {
-        deleteAllTodos();
-    }
-
     @Test
     @Description("Получение пустого списка TODO, когда база данных пуста")
     public void testGetTodosWhenDatabaseIsEmpty() {
@@ -41,8 +38,14 @@ public class GetTodosTests extends BaseTest {
     @Description("Получение списка TODO с существующими записями")
     public void testGetTodosWithExistingEntries() {
         // Предварительно создать несколько TODO
-        Todo todo1 = new TodosBuilder().setId(1).setText("Task 1").setCompleted(false).build();
-        Todo todo2 = new TodosBuilder().setId(1).setText("Task 2").setCompleted(true).build();
+        Todo todo1 = new TodosBuilder().setId(1)
+                .setText("Task 1")
+                .setCompleted(false)
+                .build();
+        Todo todo2 = new TodosBuilder().setId(1)
+                .setText("Task 2")
+                .setCompleted(true)
+                .build();
         new ValidatedTodoRequest(unAuthSpec()).create(todo1);
         new ValidatedTodoRequest(unAuthSpec()).create(todo2);
 
@@ -55,12 +58,13 @@ public class GetTodosTests extends BaseTest {
 
     @Test
     @Description("Использование параметров offset и limit для пагинации")
+    @PrepareTodo(5)
     public void testGetTodosWithOffsetAndLimit() {
         // Создаем 5 TODO
-        for (int i = 1; i <= 5; i++) {
-            new ValidatedTodoRequest(unAuthSpec()).create(new Todo(i, "Task " + i, i % 2 == 0));
-
-        }
+//        for (int i = 1; i <= 5; i++) {
+//            new ValidatedTodoRequest(unAuthSpec()).create(new Todo(i, "Task " + i, i % 2 == 0));
+//
+//        }
 
         List<Todo> todos = new ValidatedTodoRequest(unAuthSpec()).readAll(2, 2);
 
