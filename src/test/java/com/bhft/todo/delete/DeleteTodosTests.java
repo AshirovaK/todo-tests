@@ -7,7 +7,6 @@ import com.todo.requests.TodoRequest;
 import com.todo.requests.ValidatedTodoRequest;
 import com.todo.specs.RequestSpec;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

@@ -24,23 +24,23 @@ public class BaseTest {
                 .getProperty("PORT"));
     }
 
-    @BeforeEach
-    protected void deleteAllTodos() {
-        List<Todo> todos = List.of(new TodoRequest(RequestSpec.authSpec()).readAll()
-                .then()
-                .extract()
-                .body()
-                .as(Todo[].class));
-        todos.forEach(todo -> new TodoRequest(RequestSpec.authSpec()).delete(todo.getId()));
-    }
+//    @BeforeEach
+//    protected void deleteAllTodos() {
+//        List<Todo> todos = List.of(new TodoRequest(RequestSpec.authSpec()).readAll()
+//                .then()
+//                .extract()
+//                .body()
+//                .as(Todo[].class));
+//        todos.forEach(todo -> new TodoRequest(RequestSpec.authSpec()).delete(todo.getId()));
+//    }
 
     @AfterEach
     public void clean() {
-        HashMap<Long, Todo> todos = TestDataStorage.getInstance()
-                .getStorage();
-        todos.forEach((id, todo) -> new TodoRequest(RequestSpec.authSpec()).delete(id));
-//        TestDataStorage.getInstance()
-//                .cleanInstance();
+        TestDataStorage.getInstance().getStorage()
+                .forEach((id, todo) ->
+                        new TodoRequest(RequestSpec.authSpec())
+                                .delete(id));
+        TestDataStorage.getInstance().cleanInstance();
     }
 
 }
