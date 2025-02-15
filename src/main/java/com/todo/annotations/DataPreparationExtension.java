@@ -1,6 +1,6 @@
 package com.todo.annotations;
 
-import com.todo.models.TodosBuilder;
+import com.todo.models.TodoBuilder;
 import com.todo.requests.TodoRequest;
 import com.todo.specs.RequestSpec;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -17,7 +17,7 @@ public class DataPreparationExtension implements BeforeEachCallback {
         if (prepareTodo != null) {
             for (int i = 0; i < prepareTodo.value(); i++) {
                 new TodoRequest(RequestSpec.authSpec())
-                        .create(new TodosBuilder()
+                        .create(new TodoBuilder()
                                 .setId(Long.parseLong(RandomStringUtils.randomNumeric(3)))
                                 .setText("123")
                                 .build());

@@ -2,14 +2,13 @@ package com.bhft.todo.post;
 
 import com.bhft.todo.BaseTest;
 import com.todo.models.Todo;
-import com.todo.models.TodosBuilder;
+import com.todo.models.TodoBuilder;
 import com.todo.requests.TodoRequest;
 import com.todo.requests.ValidatedTodoRequest;
 import com.todo.specs.RequestSpec;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +22,10 @@ public class PostTodosTests extends BaseTest {
 
     @Test
     public void testCreateTodoWithValidData() {
-        Todo newTodo = new Todo(1, "New Task", false);
+        Todo newTodo = new TodoBuilder().setId(1)
+                .setText("New Task")
+                .setCompleted(false)
+                .build();
         new ValidatedTodoRequest(RequestSpec.unAuthSpec()).create(newTodo);
         List<Todo> todos = new ValidatedTodoRequest(RequestSpec.unAuthSpec()).readAll();
         Assertions.assertTrue(todos.contains(newTodo), "Созданная задача найдена в списке TODO");
@@ -55,7 +57,7 @@ public class PostTodosTests extends BaseTest {
     public void testCreateTodoWithMaxLengthText() {
         // Предполагаем, что максимальная длина поля 'text' составляет 255 символов
         String maxLengthText = "A".repeat(255);
-        Todo newTodo = new Todo(3, maxLengthText, false);
+        Todo newTodo = new TodoBuilder().setId(3).setText("maxLengthText").setCompleted(false).build();
 
         // Отправляем POST запрос для создания нового TODO
         given().filter(new AllureRestAssured())
@@ -95,7 +97,7 @@ public class PostTodosTests extends BaseTest {
     @Disabled("Ignoring contract test")
     public void testCreateTodoWithInvalidDataTypes() {
         // Поле 'completed' содержит строку вместо булевого значения
-        Todo newTodo = new TodosBuilder().setId(3)
+        Todo newTodo = new TodoBuilder().setId(3)
                 .setText("djjdjd")
                 .setCompleted(false)
                 .build();
@@ -115,11 +117,17 @@ public class PostTodosTests extends BaseTest {
     @Test
     public void testCreateTodoWithExistingId() {
         // Сначала создаем TODO с id = 5
-        Todo firstTodo = new TodosBuilder().setId(5).setText("First Task").setCompleted(false).build();
+        Todo firstTodo = new TodoBuilder().setId(5)
+                .setText("First Task")
+                .setCompleted(false)
+                .build();
         new ValidatedTodoRequest(unAuthSpec()).create(firstTodo);
 
         // Пытаемся создать другую TODO с тем же id
-        Todo duplicateTodo = new TodosBuilder().setId(5).setText("Duplicate Task").setCompleted(true).build();
+        Todo duplicateTodo = new TodoBuilder().setId(5)
+                .setText("Duplicate Task")
+                .setCompleted(true)
+                .build();
 
         given().filter(new AllureRestAssured())
                 .contentType(ContentType.JSON)

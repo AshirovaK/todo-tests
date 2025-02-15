@@ -2,7 +2,7 @@ package com.bhft.todo.delete;
 
 import com.bhft.todo.BaseTest;
 import com.todo.models.Todo;
-import com.todo.models.TodosBuilder;
+import com.todo.models.TodoBuilder;
 import com.todo.requests.TodoRequest;
 import com.todo.requests.ValidatedTodoRequest;
 import com.todo.specs.RequestSpec;
@@ -23,7 +23,7 @@ public class DeleteTodosTests extends BaseTest {
      */
     @Test
     public void testDeleteExistingTodoWithValidAuth() {
-        Todo todo = new TodosBuilder().setId(1)
+        Todo todo = new TodoBuilder().setId(1)
                 .setText("Task to Delete")
                 .setCompleted(false)
                 .build();
@@ -42,7 +42,7 @@ public class DeleteTodosTests extends BaseTest {
     @Test
     public void testDeleteTodoWithoutAuthHeader() {
         // Создаем TODO для удаления
-        Todo todo = new TodosBuilder().setId(2)
+        Todo todo = new TodoBuilder().setId(2)
                 .setText("Task to Delete")
                 .setCompleted(false)
                 .build();
@@ -62,7 +62,7 @@ public class DeleteTodosTests extends BaseTest {
     @Test
     public void testDeleteTodoWithInvalidAuth() {
         // Создаем TODO для удаления
-        Todo todo = new TodosBuilder().setId(3)
+        Todo todo = new TodoBuilder().setId(3)
                 .setText("Task to Delete")
                 .setCompleted(false)
                 .build();
@@ -83,7 +83,7 @@ public class DeleteTodosTests extends BaseTest {
     @Test
     public void testDeleteNonExistentTodo() {
         // Отправляем DELETE запрос для несуществующего TODO с корректной авторизацией
-        Todo todo = new TodosBuilder().setId(999)
+        Todo todo = new TodoBuilder().setId(999)
                 .setText("Task to Delete")
                 .setCompleted(false)
                 .build();

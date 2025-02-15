@@ -2,15 +2,13 @@ package com.bhft.todo.get;
 
 
 import com.bhft.todo.BaseTest;
-import com.todo.annotations.Mobile;
 import com.todo.annotations.PrepareTodo;
-import com.todo.models.TodosBuilder;
+import com.todo.models.TodoBuilder;
 import com.todo.requests.ValidatedTodoRequest;
 import io.qameta.allure.*;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -38,11 +36,11 @@ public class GetTodosTests extends BaseTest {
     @Description("Получение списка TODO с существующими записями")
     public void testGetTodosWithExistingEntries() {
         // Предварительно создать несколько TODO
-        Todo todo1 = new TodosBuilder().setId(1)
+        Todo todo1 = new TodoBuilder().setId(1)
                 .setText("Task 1")
                 .setCompleted(false)
                 .build();
-        Todo todo2 = new TodosBuilder().setId(1)
+        Todo todo2 = new TodoBuilder().setId(1)
                 .setText("Task 2")
                 .setCompleted(true)
                 .build();
@@ -62,9 +60,12 @@ public class GetTodosTests extends BaseTest {
     public void testGetTodosWithOffsetAndLimit() {
         // Создаем 5 TODO
 //        for (int i = 1; i <= 5; i++) {
-//            new ValidatedTodoRequest(unAuthSpec()).create(new Todo(i, "Task " + i, i % 2 == 0));
-//
+//            new ValidatedTodoRequest(unAuthSpec()).create(new TodoBuilder().setId(i)
+//                    .setText("Task " + i)
+//                    .setCompleted(i % 2 == 0)
+//                    .build());
 //        }
+
 
         List<Todo> todos = new ValidatedTodoRequest(unAuthSpec()).readAll(2, 2);
 
@@ -114,7 +115,10 @@ public class GetTodosTests extends BaseTest {
     public void testGetTodosWithExcessiveLimit() {
         // Создаем 10 TODO
         for (int i = 1; i <= 10; i++) {
-            new ValidatedTodoRequest(unAuthSpec()).create(new Todo(i, "Task " + i, i % 2 == 0));
+            new ValidatedTodoRequest(unAuthSpec()).create(new TodoBuilder().setId(i)
+                    .setText("Task " + i)
+                    .setCompleted(i % 2 == 0)
+                    .build());
         }
 
         Response response = given().filter(new AllureRestAssured())

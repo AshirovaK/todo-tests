@@ -1,13 +1,12 @@
 package com.bhft.todo.put;
 
 import com.bhft.todo.BaseTest;
-import com.todo.models.TodosBuilder;
+import com.todo.models.TodoBuilder;
 import com.todo.requests.ValidatedTodoRequest;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -25,14 +24,14 @@ public class PutTodosTests extends BaseTest {
     @Test
     public void testUpdateExistingTodoWithValidData() {
         // Создаем TODO для обновления
-        Todo originalTodo = new TodosBuilder().setId(1)
+        Todo originalTodo = new TodoBuilder().setId(1)
                 .setText("Original Task")
                 .setCompleted(false)
                 .build();
         new ValidatedTodoRequest(unAuthSpec()).create(originalTodo);
 
         // Обновленные данные
-        Todo updatedTodo = new TodosBuilder().setId(1)
+        Todo updatedTodo = new TodoBuilder().setId(1)
                 .setText("Updated Task")
                 .setCompleted(true)
                 .build();
@@ -65,7 +64,7 @@ public class PutTodosTests extends BaseTest {
     @Test
     public void testUpdateNonExistentTodo() {
         // Обновленные данные для несуществующего TODO
-        Todo updatedTodo = new TodosBuilder().setId(999)
+        Todo updatedTodo = new TodoBuilder().setId(999)
                 .setText("Non-existent Task")
                 .setCompleted(true)
                 .build();
@@ -88,7 +87,10 @@ public class PutTodosTests extends BaseTest {
     public void testUpdateTodoWithMissingFields() {
         // Создаем TODO для обновления
 
-        Todo originalTodo = new Todo(2, "Task to Update", false);
+        Todo originalTodo = new TodoBuilder().setId(2)
+                .setText("Task to Update")
+                .setCompleted(false)
+                .build();
         new ValidatedTodoRequest(unAuthSpec()).create(originalTodo);
 
         // Обновленные данные с отсутствующим полем 'text'
@@ -112,7 +114,10 @@ public class PutTodosTests extends BaseTest {
     @Test
     public void testUpdateTodoWithInvalidDataTypes() {
         // Создаем TODO для обновления
-        Todo originalTodo = new Todo(3, "Another Task", false);
+        Todo originalTodo = new TodoBuilder().setId(3)
+                .setText("Another Task")
+                .setCompleted(false)
+                .build();
         new ValidatedTodoRequest(unAuthSpec()).create(originalTodo);
 
         // Обновленные данные с некорректным типом поля 'completed'
@@ -133,7 +138,7 @@ public class PutTodosTests extends BaseTest {
     @Test
     public void testUpdateTodoWithoutChangingData() {
         // Создаем TODO для обновления
-        Todo originalTodo = new TodosBuilder().setId(4)
+        Todo originalTodo = new TodoBuilder().setId(4)
                 .setText("Task without Changes")
                 .setCompleted(false)
                 .build();

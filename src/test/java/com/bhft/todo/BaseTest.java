@@ -36,11 +36,13 @@ public class BaseTest {
 
     @AfterEach
     public void clean() {
-        TestDataStorage.getInstance().getStorage()
+        TestDataStorage.getInstance()
+                .getStorage()
                 .forEach((id, todo) ->
                         new TodoRequest(RequestSpec.authSpec())
                                 .delete(id));
-        TestDataStorage.getInstance().cleanInstance();
+        TestDataStorage.getInstance()
+                .cleanInstance();
     }
 
 }
