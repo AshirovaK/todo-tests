@@ -13,7 +13,7 @@ public class DataPreparationExtension implements BeforeEachCallback {
         var testMethod = extensionContext.getRequiredTestMethod();
 
         var prepareTodo = testMethod.getAnnotation(PrepareTodo.class);
-
+        //TODO вынести в метод?
         if (prepareTodo != null) {
             for (int i = 0; i < prepareTodo.value(); i++) {
                 new TodoRequest(RequestSpec.authSpec())
