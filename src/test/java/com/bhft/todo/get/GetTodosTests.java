@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.todo.specs.RequestSpec.unAuthSpec;
+import static com.todo.specs.request.RequestSpec.unAuthSpec;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

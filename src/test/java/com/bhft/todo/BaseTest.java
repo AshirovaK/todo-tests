@@ -1,18 +1,13 @@
 package com.bhft.todo;
 
 import com.todo.conf.Configuration;
-import com.todo.models.Todo;
 import com.todo.requests.TodoRequest;
-import com.todo.specs.RequestSpec;
+import com.todo.specs.request.RequestSpec;
 import com.todo.storages.TestDataStorage;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-
-import java.util.HashMap;
-import java.util.List;
 
 public class BaseTest {
     @BeforeAll

@@ -32,6 +32,7 @@ public class ValidatedTodoRequest extends Request implements CrudInterface<Todo>
 
     @Override
     public Todo update(long id, Todo entity) {
+//        TODO не используется Проверить возвращаемые значения
         return todoRequest.update(id, entity)
                 .then()
                 .statusCode(HttpStatus.SC_OK)

@@ -5,13 +5,14 @@ import com.todo.models.Todo;
 import com.todo.models.TodoBuilder;
 import com.todo.requests.TodoRequest;
 import com.todo.requests.ValidatedTodoRequest;
-import com.todo.specs.RequestSpec;
+import com.todo.specs.request.RequestSpec;
+import com.todo.specs.response.IncorrectDataResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.todo.specs.RequestSpec.*;
+import static com.todo.specs.request.RequestSpec.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.is;
@@ -50,7 +51,7 @@ public class DeleteTodosTests extends BaseTest {
         // Отправляем DELETE запрос без заголовка Authorization
         new TodoRequest(unAuthSpec()).delete(todo.getId())
                 .then()
-                .statusCode(401);
+                .spec(new IncorrectDataResponse().unAuthorized());
         List<Todo> todos = new ValidatedTodoRequest(unAuthSpec()).readAll();
         // Проверяем, что TODO не было удалено
         Assertions.assertTrue(todos.contains(todo), "Задача не удалена");
@@ -67,13 +68,12 @@ public class DeleteTodosTests extends BaseTest {
                 .setCompleted(false)
                 .build();
         new ValidatedTodoRequest(unAuthSpec()).create(todo);
-
         // Отправляем DELETE запрос с некорректной авторизацией
         new TodoRequest(invalidAuthSpec()).delete(todo.getId())
                 .then()
-                .statusCode(401);
-        List<Todo> todos = new ValidatedTodoRequest(unAuthSpec()).readAll();
+                .spec(new IncorrectDataResponse().unAuthorized());
         // Проверяем, что TODO не было удалено
+        List<Todo> todos = new ValidatedTodoRequest(unAuthSpec()).readAll();
         Assertions.assertTrue(todos.contains(todo), "Задача не удалена");
     }
 
@@ -82,33 +82,13 @@ public class DeleteTodosTests extends BaseTest {
      */
     @Test
     public void testDeleteNonExistentTodo() {
-        // Отправляем DELETE запрос для несуществующего TODO с корректной авторизацией
         Todo todo = new TodoBuilder().setId(999)
                 .setText("Task to Delete")
                 .setCompleted(false)
                 .build();
         new TodoRequest(authSpec()).delete(todo.getId())
                 .then()
-                .statusCode(404);
+                .spec(new IncorrectDataResponse().notFound());
         // В данном случае, поскольку мы не добавляли задач с id 999, список должен быть пуст или содержать только ранее добавленные задачи
     }
-
-//    /**
-//     * TC5: Попытка удаления с некорректным форматом id (например, строка вместо числа).
-//     */
-//    @Test
-//    public void testDeleteTodoWithInvalidIdFormat() {
-//        // Отправляем DELETE запрос с некорректным id
-//        given()
-//                .filter(new AllureRestAssured())
-//                .auth()
-//                .preemptive()
-//                .basic("admin", "admin")
-//                .when()
-//                .delete("/todos/invalidId")
-//                .then()
-//                .statusCode(404);
-////                .contentType(ContentType.JSON)
-////                .body("error", notNullValue());
-//    }
 }

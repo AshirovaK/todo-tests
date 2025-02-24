@@ -2,7 +2,7 @@ package com.todo.annotations;
 
 import com.todo.models.TodoBuilder;
 import com.todo.requests.TodoRequest;
-import com.todo.specs.RequestSpec;
+import com.todo.specs.request.RequestSpec;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;

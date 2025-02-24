@@ -5,7 +5,8 @@ import com.todo.models.Todo;
 import com.todo.models.TodoBuilder;
 import com.todo.requests.TodoRequest;
 import com.todo.requests.ValidatedTodoRequest;
-import com.todo.specs.RequestSpec;
+import com.todo.specs.request.RequestSpec;
+import com.todo.specs.response.IncorrectDataResponse;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.todo.specs.RequestSpec.unAuthSpec;
+import static com.todo.specs.request.RequestSpec.unAuthSpec;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
@@ -37,17 +38,13 @@ public class PostTodosTests extends BaseTest {
     @Test
     public void testCreateTodoWithMissingFields() {
         // Создаем JSON без обязательного поля 'text'
-        String invalidTodoJson = "{ \"id\": 2, \"completed\": true }";
+        Todo todo = new TodoBuilder().setId(2)
+                .setCompleted(true)
+                .build();
 
-        given().filter(new AllureRestAssured())
-                .contentType(ContentType.JSON)
-                .body(invalidTodoJson)
-                .when()
-                .post("/todos")
+        new TodoRequest(unAuthSpec()).create(todo)
                 .then()
-                .statusCode(400)
-                .contentType(ContentType.TEXT)
-                .body(notNullValue()); // Проверяем, что есть сообщение об ошибке
+                .spec(new IncorrectDataResponse().badRequest());
     }
 
     /**
@@ -57,7 +54,10 @@ public class PostTodosTests extends BaseTest {
     public void testCreateTodoWithMaxLengthText() {
         // Предполагаем, что максимальная длина поля 'text' составляет 255 символов
         String maxLengthText = "A".repeat(255);
-        Todo newTodo = new TodoBuilder().setId(3).setText("maxLengthText").setCompleted(false).build();
+        Todo newTodo = new TodoBuilder().setId(3)
+                .setText("maxLengthText")
+                .setCompleted(false)
+                .build();
 
         // Отправляем POST запрос для создания нового TODO
         given().filter(new AllureRestAssured())
@@ -116,28 +116,15 @@ public class PostTodosTests extends BaseTest {
      */
     @Test
     public void testCreateTodoWithExistingId() {
-        // Сначала создаем TODO с id = 5
-        Todo firstTodo = new TodoBuilder().setId(5)
-                .setText("First Task")
-                .setCompleted(false)
-                .build();
+        // Сначала создаем с id = 5
+        Todo firstTodo = new Todo(5, "First Task", false);
         new ValidatedTodoRequest(unAuthSpec()).create(firstTodo);
+        // Пытаемся создать другую с тем же id
+        Todo duplicateTodo = new Todo(5, "Duplicate Task", true);
 
-        // Пытаемся создать другую TODO с тем же id
-        Todo duplicateTodo = new TodoBuilder().setId(5)
-                .setText("Duplicate Task")
-                .setCompleted(true)
-                .build();
-
-        given().filter(new AllureRestAssured())
-                .contentType(ContentType.JSON)
-                .body(duplicateTodo)
-                .when()
-                .post("/todos")
+        new TodoRequest(unAuthSpec()).create(duplicateTodo)
                 .then()
-                .statusCode(400) // Конфликт при дублировании 'id'
-                //.contentType(ContentType.TEXT)
-                .body(is(notNullValue())); // Проверяем, что есть сообщение об ошибке
+                .spec(new IncorrectDataResponse().sameId());
     }
 
 }

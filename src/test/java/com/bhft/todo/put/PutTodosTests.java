@@ -2,7 +2,9 @@ package com.bhft.todo.put;
 
 import com.bhft.todo.BaseTest;
 import com.todo.models.TodoBuilder;
+import com.todo.requests.TodoRequest;
 import com.todo.requests.ValidatedTodoRequest;
+import com.todo.specs.response.IncorrectDataResponse;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
@@ -10,11 +12,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static com.todo.specs.RequestSpec.unAuthSpec;
+import static com.todo.specs.request.RequestSpec.authSpec;
+import static com.todo.specs.request.RequestSpec.unAuthSpec;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
 
 import com.todo.models.Todo;
+
+import java.util.List;
 
 public class PutTodosTests extends BaseTest {
 
@@ -69,15 +73,9 @@ public class PutTodosTests extends BaseTest {
                 .setCompleted(true)
                 .build();
 
-        given().filter(new AllureRestAssured())
-                .contentType(ContentType.JSON)
-                .body(updatedTodo)
-                .when()
-                .put("/todos/" + updatedTodo.getId())
+        new TodoRequest(unAuthSpec()).update(999, updatedTodo)
                 .then()
-                .statusCode(404)
-                //.contentType(ContentType.TEXT)
-                .body(is(notNullValue()));
+                .spec(new IncorrectDataResponse().notFound());
     }
 
     /**
@@ -86,25 +84,19 @@ public class PutTodosTests extends BaseTest {
     @Test
     public void testUpdateTodoWithMissingFields() {
         // Создаем TODO для обновления
-
         Todo originalTodo = new TodoBuilder().setId(2)
                 .setText("Task to Update")
                 .setCompleted(false)
                 .build();
-        new ValidatedTodoRequest(unAuthSpec()).create(originalTodo);
+        new ValidatedTodoRequest(authSpec()).create(originalTodo);
 
         // Обновленные данные с отсутствующим полем 'text'
-        String invalidTodoJson = "{ \"id\": 2, \"completed\": true }";
-
-        given().filter(new AllureRestAssured())
-                .contentType(ContentType.JSON)
-                .body(invalidTodoJson)
-                .when()
-                .put("/todos/2")
+        Todo invalidTodoJson = new TodoBuilder().setId(2)
+                .setCompleted(false)
+                .build();
+        new TodoRequest(authSpec()).update(2, invalidTodoJson)
                 .then()
-                .statusCode(401);
-        //.contentType(ContentType.JSON)
-        //.body("error", containsString("Missing required field 'text'"));
+                .spec(new IncorrectDataResponse().badRequest());
     }
 
     /**
@@ -145,24 +137,14 @@ public class PutTodosTests extends BaseTest {
         new ValidatedTodoRequest(unAuthSpec()).create(originalTodo);
 
         // Отправляем PUT запрос с теми же данными
-        given().filter(new AllureRestAssured())
-                .contentType(ContentType.JSON)
-                .body(originalTodo)
-                .when()
-                .put("/todos/4")
-                .then()
-                .statusCode(200);
 
+        new TodoRequest(authSpec()).update(4, originalTodo);
 
+        List<Todo> todos = new ValidatedTodoRequest(authSpec()).readAll();
         // Проверяем, что данные не изменились
-        Todo[] todo = given().when()
-                .get("/todos")
-                .then()
-                .statusCode(200)
-                .extract()
-                .as(Todo[].class);
-
-        Assertions.assertEquals("Task without Changes", todo[0].getText());
-        Assertions.assertFalse(todo[0].isCompleted());
+        Assertions.assertEquals("Task without Changes", todos.getFirst()
+                .getText());
+        Assertions.assertFalse(todos.getFirst()
+                .isCompleted());
     }
 }
