@@ -15,6 +15,7 @@ public class BaseTest {
 
     protected TodoRequester todoRequester;
     protected TodoRequester unAuthTodoRequester;
+    protected TodoRequester invalidAuthTodoRequester;
 
     @BeforeAll
     public static void setup() {
@@ -29,6 +30,7 @@ public class BaseTest {
     public void setupTest() {
         todoRequester = new TodoRequester(RequestSpec.authSpec());
         unAuthTodoRequester = new TodoRequester(RequestSpec.unAuthSpec());
+        invalidAuthTodoRequester = new TodoRequester(RequestSpec.invalidAuthSpec());
     }
 
 //    @BeforeEach

@@ -1,9 +1,8 @@
 package com.bhft.todo.put;
 
 import com.bhft.todo.BaseTest;
+import com.todo.models.Todo;
 import com.todo.models.TodoBuilder;
-import com.todo.requests.TodoRequest;
-import com.todo.requests.ValidatedTodoRequest;
 import com.todo.specs.response.IncorrectDataResponse;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.filter.log.ResponseLoggingFilter;
@@ -12,13 +11,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static com.todo.specs.request.RequestSpec.authSpec;
-import static com.todo.specs.request.RequestSpec.unAuthSpec;
-import static io.restassured.RestAssured.given;
-
-import com.todo.models.Todo;
-
 import java.util.List;
+
+import static io.restassured.RestAssured.given;
 
 public class PutTodosTests extends BaseTest {
 

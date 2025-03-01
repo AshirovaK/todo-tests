@@ -3,9 +3,6 @@ package com.bhft.todo.post;
 import com.bhft.todo.BaseTest;
 import com.todo.models.Todo;
 import com.todo.models.TodoBuilder;
-import com.todo.requests.TodoRequest;
-import com.todo.requests.ValidatedTodoRequest;
-import com.todo.specs.request.RequestSpec;
 import com.todo.specs.response.IncorrectDataResponse;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.http.ContentType;
@@ -15,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.todo.specs.request.RequestSpec.unAuthSpec;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
@@ -27,8 +23,10 @@ public class PostTodosTests extends BaseTest {
                 .setText("New Task")
                 .setCompleted(false)
                 .build();
-        new ValidatedTodoRequest(RequestSpec.unAuthSpec()).create(newTodo);
-        List<Todo> todos = new ValidatedTodoRequest(RequestSpec.unAuthSpec()).readAll();
+        unAuthTodoRequester.getValidatedRequest()
+                .create(newTodo);
+        List<Todo> todos = unAuthTodoRequester.getValidatedRequest()
+                .readAll();
         Assertions.assertTrue(todos.contains(newTodo), "Созданная задача найдена в списке TODO");
     }
 
@@ -103,9 +101,8 @@ public class PostTodosTests extends BaseTest {
                 .setCompleted(false)
                 .build();
 
-        TodoRequest todoRequest = new TodoRequest(RequestSpec.authSpec());
-
-        todoRequest.create(newTodo)
+        todoRequester.getRequest()
+                .create(newTodo)
                 .then()
                 .statusCode(400)
                 .contentType(ContentType.TEXT)

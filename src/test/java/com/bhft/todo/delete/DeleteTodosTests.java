@@ -3,16 +3,12 @@ package com.bhft.todo.delete;
 import com.bhft.todo.BaseTest;
 import com.todo.models.Todo;
 import com.todo.models.TodoBuilder;
-import com.todo.requests.TodoRequest;
-import com.todo.requests.ValidatedTodoRequest;
-import com.todo.specs.request.RequestSpec;
 import com.todo.specs.response.IncorrectDataResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.todo.specs.request.RequestSpec.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.is;
@@ -76,7 +72,8 @@ public class DeleteTodosTests extends BaseTest {
         unAuthTodoRequester.getValidatedRequest()
                 .create(todo);
         // Отправляем DELETE запрос с некорректной авторизацией
-        new TodoRequest(invalidAuthSpec()).delete(todo.getId())
+        invalidAuthTodoRequester.getRequest()
+                .delete(todo.getId())
                 .then()
                 .spec(new IncorrectDataResponse().unAuthorized());
         // Проверяем, что TODO не было удалено

@@ -2,27 +2,26 @@ package com.bhft.todo.get;
 
 
 import com.bhft.todo.BaseTest;
-import com.todo.annotations.PrepareTodo;
 import com.todo.annotations.DataPreparationExtension;
-import com.todo.requests.ValidatedTodoRequest;
+import com.todo.annotations.PrepareTodo;
+import com.todo.models.Todo;
 import com.todo.storages.TestDataStorage;
-import io.qameta.allure.*;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static com.todo.specs.request.RequestSpec.unAuthSpec;
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
-import com.todo.models.Todo;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.HashMap;
 import java.util.List;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @Epic("TODO Management")
 @Feature("Get Todos API")
