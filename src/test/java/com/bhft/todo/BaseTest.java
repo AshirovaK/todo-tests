@@ -1,12 +1,10 @@
 package com.bhft.todo;
 
-import com.todo.conf.Configuration;
+import com.todo.config.RestAssuredConfig;
 import com.todo.requests.AuthType;
 import com.todo.requests.TodoRequesterFactory;
 import com.todo.requests.facades.TodoRequester;
 import com.todo.storages.TestDataCleaner;
-import io.restassured.RestAssured;
-import io.restassured.parsing.Parser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,11 +17,7 @@ public class BaseTest {
 
     @BeforeAll
     public static void setup() {
-        RestAssured.defaultParser = Parser.JSON;
-        RestAssured.baseURI = Configuration.getInstance()
-                .getProperty("BASE_URL");
-        RestAssured.port = Integer.parseInt(Configuration.getInstance()
-                .getProperty("PORT"));
+        RestAssuredConfig.setup();
     }
 
     @BeforeEach
