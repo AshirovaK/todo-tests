@@ -1,10 +1,10 @@
 package com.bhft.todo;
 
 import com.todo.conf.Configuration;
-import com.todo.requests.TodoRequest;
+import com.todo.requests.AuthType;
+import com.todo.requests.TodoRequesterFactory;
 import com.todo.requests.facades.TodoRequester;
-import com.todo.specs.request.RequestSpec;
-import com.todo.storages.TestDataStorage;
+import com.todo.storages.TestDataCleaner;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import org.junit.jupiter.api.AfterEach;
@@ -28,9 +28,9 @@ public class BaseTest {
 
     @BeforeEach
     public void setupTest() {
-        todoRequester = new TodoRequester(RequestSpec.authSpec());
-        unAuthTodoRequester = new TodoRequester(RequestSpec.unAuthSpec());
-        invalidAuthTodoRequester = new TodoRequester(RequestSpec.invalidAuthSpec());
+        todoRequester = TodoRequesterFactory.createRequester(AuthType.AUTHENTICATED);
+        unAuthTodoRequester = TodoRequesterFactory.createRequester(AuthType.UNAUTHENTICATED);
+        invalidAuthTodoRequester = TodoRequesterFactory.createRequester(AuthType.INVALID_AUTH);
     }
 
 //    @BeforeEach
@@ -45,13 +45,7 @@ public class BaseTest {
 
     @AfterEach
     public void clean() {
-        TestDataStorage.getInstance()
-                .getStorage()
-                .forEach((id, todo) ->
-                        new TodoRequest(RequestSpec.authSpec())
-                                .delete(id));
-        TestDataStorage.getInstance()
-                .cleanInstance();
+        TestDataCleaner.clean();
     }
 
 }
