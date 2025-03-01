@@ -28,11 +28,14 @@ public class DeleteTodosTests extends BaseTest {
                 .setText("Task to Delete")
                 .setCompleted(false)
                 .build();
-        new ValidatedTodoRequest(unAuthSpec()).create(todo);
-        String body = new ValidatedTodoRequest(RequestSpec.authSpec()).delete(todo.getId());
+        todoRequester.getValidatedRequest()
+                .create(todo);
+        String body = todoRequester.getValidatedRequest()
+                .delete(todo.getId());
         assertThat(body, is(emptyOrNullString()));
         // Получаем список всех TODO и проверяем, что удаленная задача отсутствует
-        List<Todo> todos = new ValidatedTodoRequest(authSpec()).readAll();
+        List<Todo> todos = todoRequester.getValidatedRequest()
+                .readAll();
         Assertions.assertTrue(todos.stream()
                 .noneMatch(todoFromList -> todoFromList.equals(todo)), "Задача удалена из списка");
     }
@@ -47,12 +50,15 @@ public class DeleteTodosTests extends BaseTest {
                 .setText("Task to Delete")
                 .setCompleted(false)
                 .build();
-        new ValidatedTodoRequest(unAuthSpec()).create(todo);
+        todoRequester.getValidatedRequest()
+                .create(todo);
         // Отправляем DELETE запрос без заголовка Authorization
-        new TodoRequest(unAuthSpec()).delete(todo.getId())
+        unAuthTodoRequester.getRequest()
+                .delete(todo.getId())
                 .then()
                 .spec(new IncorrectDataResponse().unAuthorized());
-        List<Todo> todos = new ValidatedTodoRequest(unAuthSpec()).readAll();
+        List<Todo> todos = unAuthTodoRequester.getValidatedRequest()
+                .readAll();
         // Проверяем, что TODO не было удалено
         Assertions.assertTrue(todos.contains(todo), "Задача не удалена");
     }
@@ -67,13 +73,15 @@ public class DeleteTodosTests extends BaseTest {
                 .setText("Task to Delete")
                 .setCompleted(false)
                 .build();
-        new ValidatedTodoRequest(unAuthSpec()).create(todo);
+        unAuthTodoRequester.getValidatedRequest()
+                .create(todo);
         // Отправляем DELETE запрос с некорректной авторизацией
         new TodoRequest(invalidAuthSpec()).delete(todo.getId())
                 .then()
                 .spec(new IncorrectDataResponse().unAuthorized());
         // Проверяем, что TODO не было удалено
-        List<Todo> todos = new ValidatedTodoRequest(unAuthSpec()).readAll();
+        List<Todo> todos = unAuthTodoRequester.getValidatedRequest()
+                .readAll();
         Assertions.assertTrue(todos.contains(todo), "Задача не удалена");
     }
 
@@ -86,7 +94,9 @@ public class DeleteTodosTests extends BaseTest {
                 .setText("Task to Delete")
                 .setCompleted(false)
                 .build();
-        new TodoRequest(authSpec()).delete(todo.getId())
+
+        todoRequester.getRequest()
+                .delete(todo.getId())
                 .then()
                 .spec(new IncorrectDataResponse().notFound());
         // В данном случае, поскольку мы не добавляли задач с id 999, список должен быть пуст или содержать только ранее добавленные задачи

@@ -32,7 +32,8 @@ public class PutTodosTests extends BaseTest {
                 .setText("Original Task")
                 .setCompleted(false)
                 .build();
-        new ValidatedTodoRequest(unAuthSpec()).create(originalTodo);
+        unAuthTodoRequester.getValidatedRequest()
+                .create(originalTodo);
 
         // Обновленные данные
         Todo updatedTodo = new TodoBuilder().setId(1)
@@ -73,7 +74,8 @@ public class PutTodosTests extends BaseTest {
                 .setCompleted(true)
                 .build();
 
-        new TodoRequest(unAuthSpec()).update(999, updatedTodo)
+        unAuthTodoRequester.getRequest()
+                .update(999, updatedTodo)
                 .then()
                 .spec(new IncorrectDataResponse().notFound());
     }
@@ -88,13 +90,15 @@ public class PutTodosTests extends BaseTest {
                 .setText("Task to Update")
                 .setCompleted(false)
                 .build();
-        new ValidatedTodoRequest(authSpec()).create(originalTodo);
+        todoRequester.getValidatedRequest()
+                .create(originalTodo);
 
         // Обновленные данные с отсутствующим полем 'text'
         Todo invalidTodoJson = new TodoBuilder().setId(2)
                 .setCompleted(false)
                 .build();
-        new TodoRequest(authSpec()).update(2, invalidTodoJson)
+        todoRequester.getRequest()
+                .update(2, invalidTodoJson)
                 .then()
                 .spec(new IncorrectDataResponse().badRequest());
     }
@@ -110,7 +114,8 @@ public class PutTodosTests extends BaseTest {
                 .setText("Another Task")
                 .setCompleted(false)
                 .build();
-        new ValidatedTodoRequest(unAuthSpec()).create(originalTodo);
+        unAuthTodoRequester.getValidatedRequest()
+                .create(originalTodo);
 
         // Обновленные данные с некорректным типом поля 'completed'
         String invalidTodoJson = "{ \"id\": 3, \"text\": \"Updated Task\", \"completed\": \"notBoolean\" }";
@@ -134,13 +139,16 @@ public class PutTodosTests extends BaseTest {
                 .setText("Task without Changes")
                 .setCompleted(false)
                 .build();
-        new ValidatedTodoRequest(unAuthSpec()).create(originalTodo);
+        unAuthTodoRequester.getValidatedRequest()
+                .create(originalTodo);
 
         // Отправляем PUT запрос с теми же данными
 
-        new TodoRequest(authSpec()).update(4, originalTodo);
+        todoRequester.getRequest()
+                .update(4, originalTodo);
 
-        List<Todo> todos = new ValidatedTodoRequest(authSpec()).readAll();
+        List<Todo> todos = todoRequester.getValidatedRequest()
+                .readAll();
         // Проверяем, что данные не изменились
         Assertions.assertEquals("Task without Changes", todos.getFirst()
                 .getText());

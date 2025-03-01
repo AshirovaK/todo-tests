@@ -42,7 +42,8 @@ public class PostTodosTests extends BaseTest {
                 .setCompleted(true)
                 .build();
 
-        new TodoRequest(unAuthSpec()).create(todo)
+        unAuthTodoRequester.getRequest()
+                .create(todo)
                 .then()
                 .spec(new IncorrectDataResponse().badRequest());
     }
@@ -118,11 +119,13 @@ public class PostTodosTests extends BaseTest {
     public void testCreateTodoWithExistingId() {
         // Сначала создаем с id = 5
         Todo firstTodo = new Todo(5, "First Task", false);
-        new ValidatedTodoRequest(unAuthSpec()).create(firstTodo);
+        unAuthTodoRequester.getValidatedRequest()
+                .create(firstTodo);
         // Пытаемся создать другую с тем же id
         Todo duplicateTodo = new Todo(5, "Duplicate Task", true);
 
-        new TodoRequest(unAuthSpec()).create(duplicateTodo)
+        unAuthTodoRequester.getRequest()
+                .create(duplicateTodo)
                 .then()
                 .spec(new IncorrectDataResponse().sameId());
     }

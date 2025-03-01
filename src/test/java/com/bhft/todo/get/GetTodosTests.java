@@ -33,7 +33,8 @@ public class GetTodosTests extends BaseTest {
     @Test
     @Description("Получение пустого списка TODO, когда база данных пуста")
     public void testGetTodosWhenDatabaseIsEmpty() {
-        List<Todo> todos = new ValidatedTodoRequest(unAuthSpec()).readAll();
+        List<Todo> todos = unAuthTodoRequester.getValidatedRequest()
+                .readAll();
         assertThat("Список пуст", todos.size(), is(0));
     }
 
@@ -43,7 +44,8 @@ public class GetTodosTests extends BaseTest {
     public void testGetTodosWithExistingEntries() {
         HashMap<Long, Todo> todosStorage = TestDataStorage.getInstance()
                 .getStorage();
-        List<Todo> todos = new ValidatedTodoRequest(unAuthSpec()).readAll();
+        List<Todo> todos = unAuthTodoRequester.getValidatedRequest()
+                .readAll();
 
         assertThat("Список содержит 2 значения", todos.size(), is(2));
         assertThat("Содержатся корректные данные", todos.containsAll(todosStorage.values()));
@@ -53,7 +55,8 @@ public class GetTodosTests extends BaseTest {
     @Description("Использование параметров offset и limit для пагинации")
     @PrepareTodo(5)
     public void testGetTodosWithOffsetAndLimit() {
-        List<Todo> todos = new ValidatedTodoRequest(unAuthSpec()).readAll(2, 2);
+        List<Todo> todos = unAuthTodoRequester.getValidatedRequest()
+                .readAll(2, 2);
         assertThat("Список содержит 2 значения", todos.size(), is(2));
 //        assertThat(); проассертить что в пагинаию попали таски с id 3 и id 4 (и сами таски корректны)
     }
