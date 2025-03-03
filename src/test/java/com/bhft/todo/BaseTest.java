@@ -1,5 +1,6 @@
 package com.bhft.todo;
 
+import com.todo.annotations.BeforeEachExtension;
 import com.todo.config.RestAssuredConfig;
 import com.todo.requests.AuthType;
 import com.todo.requests.TodoRequesterFactory;
@@ -8,7 +9,10 @@ import com.todo.storages.TestDataCleaner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+
+@ExtendWith(BeforeEachExtension.class)
 public class BaseTest {
 
     protected TodoRequester todoRequester;
@@ -26,16 +30,6 @@ public class BaseTest {
         unAuthTodoRequester = TodoRequesterFactory.createRequester(AuthType.UNAUTHENTICATED);
         invalidAuthTodoRequester = TodoRequesterFactory.createRequester(AuthType.INVALID_AUTH);
     }
-
-//    @BeforeEach
-//    protected void deleteAllTodos() {
-//        List<Todo> todos = List.of(new TodoRequest(RequestSpec.authSpec()).readAll()
-//                .then()
-//                .extract()
-//                .body()
-//                .as(Todo[].class));
-//        todos.forEach(todo -> new TodoRequest(RequestSpec.authSpec()).delete(todo.getId()));
-//    }
 
     @AfterEach
     public void clean() {

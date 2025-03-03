@@ -2,7 +2,6 @@ package com.bhft.todo.get;
 
 
 import com.bhft.todo.BaseTest;
-import com.todo.annotations.DataPreparationExtension;
 import com.todo.annotations.PrepareTodo;
 import com.todo.models.Todo;
 import com.todo.storages.TestDataStorage;
@@ -14,7 +13,6 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +23,6 @@ import static org.hamcrest.Matchers.is;
 
 @Epic("TODO Management")
 @Feature("Get Todos API")
-@ExtendWith(DataPreparationExtension.class)
 //TODO можно ли делать несколько расширений аннотаций?
 public class GetTodosTests extends BaseTest {
 

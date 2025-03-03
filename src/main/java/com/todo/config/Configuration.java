@@ -28,13 +28,13 @@ public class Configuration {
         return instance;
     }
 
-    public String getProperty(final String key) {
+    public static String getProperty(final String key) {
         String config = properties.getProperty(key);
         if (config != null) return config;
         else throw new RuntimeException(key + " not specified in the config.properties");
     }
 
-    public void setProperty(final String key, final String value) {
+    public static void setProperty(final String key, final String value) {
         properties.setProperty(key, value);
     }
 }

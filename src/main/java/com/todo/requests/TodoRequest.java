@@ -10,6 +10,7 @@ import io.restassured.specification.RequestSpecification;
 import static io.restassured.RestAssured.given;
 
 public class TodoRequest extends Request implements CrudInterface<Todo>, SearchInterface {
+
     private static final String TODO_ENDPOINT = "/todos/";
 
     public TodoRequest(RequestSpecification reqSpec) {
@@ -21,7 +22,7 @@ public class TodoRequest extends Request implements CrudInterface<Todo>, SearchI
         Response response = given().spec(reqSpec)
                 .body(entity)
                 .when()
-                .post(TODO_ENDPOINT);
+                .post(new Endpoint(TODO_ENDPOINT).build()); // можно создать EndpointService и все эндпоинты строить там
         TestDataStorage.getInstance()
                 .addData(entity);
         return response;
@@ -31,13 +32,13 @@ public class TodoRequest extends Request implements CrudInterface<Todo>, SearchI
     public Response update(long id, Todo entity) {
         return given().spec(reqSpec)
                 .body(entity)
-                .put(TODO_ENDPOINT + id);
+                .put(new Endpoint(TODO_ENDPOINT).build() + id);
     }
 
     @Override
     public Response delete(long id) {
         return given().spec(reqSpec)
-                .delete(TODO_ENDPOINT + id);
+                .delete(new Endpoint(TODO_ENDPOINT).build() + id);
     }
 
     @Override
@@ -46,13 +47,13 @@ public class TodoRequest extends Request implements CrudInterface<Todo>, SearchI
                 .queryParam("offset", offset)
                 .queryParam("limit", limit)
                 .when()
-                .get(TODO_ENDPOINT);
+                .get(new Endpoint(TODO_ENDPOINT).build());
     }
 
     @Override
     public Response readAll() {
         return given().spec(reqSpec)
                 .when()
-                .get(TODO_ENDPOINT);
+                .get(new Endpoint(TODO_ENDPOINT).build());
     }
 }
